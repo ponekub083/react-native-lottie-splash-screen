@@ -15,4 +15,5 @@
 + (void)show;
 + (void)hide;
 + (void)hideForce;
++ (void)setAnimationFinished:(Boolean)flag;
 @end

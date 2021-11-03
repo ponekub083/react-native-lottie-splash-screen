@@ -10,11 +10,11 @@
 #import "RNSplashScreen.h"
 #import <React/RCTBridge.h>
 
-static bool waitingEnd = true;
-static bool isAnimationFinished = false;
+static bool waitingEnd = true; 
 static bool addedJsLoadErrorObserver = false;
 static UIView* loadingView = nil;
 
+static bool hideTriggle = false;
 static bool animationEnd = false;
 
 @implementation RNSplashScreen
@@ -56,12 +56,15 @@ RCT_EXPORT_MODULE(SplashScreen)
 }
 
 + (void)hide {
-    if(waitingEnd){
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
-                        dispatch_get_main_queue(), ^{
-                          [loadingView removeFromSuperview];
-                        });
-    } else {
+    if(waitingEnd && !animationEnd && !hideTriggle){
+        hideTriggle = true;
+            dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
+                dispatch_get_main_queue(), ^{
+                animationEnd = true;
+                [RNSplashScreen hide];
+            });
+    }
+    else if(animationEnd) {
       dispatch_async(dispatch_get_main_queue(), ^{
         [loadingView removeFromSuperview];
       });
@@ -72,6 +75,10 @@ RCT_EXPORT_MODULE(SplashScreen)
     dispatch_async(dispatch_get_main_queue(), ^{
       [loadingView removeFromSuperview];
     });
+}
+
++(void)setAnimationFinished:(Boolean)flag {
+    animationEnd = flag;
 }
 
 + (void)jsLoadError:(NSNotification*)notification {
