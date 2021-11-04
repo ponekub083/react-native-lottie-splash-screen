@@ -61,13 +61,15 @@ RCT_EXPORT_MODULE(SplashScreen)
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
                 dispatch_get_main_queue(), ^{
                 animationEnd = true;
-                [RNSplashScreen hide];
             });
     }
     else if(animationEnd) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [loadingView removeFromSuperview];
-      });
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)),
+            dispatch_get_main_queue(), ^{
+            [UIView animateWithDuration:0.5
+                animations:^{loadingView.alpha = 0.0;}
+                completion:^(BOOL finished){ [loadingView removeFromSuperview]; }];
+        });
     }
 }
 
@@ -79,6 +81,10 @@ RCT_EXPORT_MODULE(SplashScreen)
 
 +(void)setAnimationFinished:(Boolean)flag {
     animationEnd = flag;
+}
+
++ (Boolean)getHideTrigger{
+    return  hideTriggle;
 }
 
 + (void)jsLoadError:(NSNotification*)notification {
