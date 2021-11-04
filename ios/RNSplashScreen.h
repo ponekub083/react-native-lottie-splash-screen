@@ -16,4 +16,5 @@
 + (void)hide;
 + (void)hideForce;
 + (void)setAnimationFinished:(Boolean)flag;
++ (Boolean)getHideTrigger;
 @end
